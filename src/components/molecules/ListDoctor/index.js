@@ -1,18 +1,18 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {colors, fonts} from '../../../utils';
 import {IconNext} from '../../../assets';
 
-const ListDoctor = ({profile, name, desc, type}) => {
+const ListDoctor = ({profile, name, desc, type, onPress}) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image source={profile} style={styles.avatar} />
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.desc}>{desc}</Text>
       </View>
       {type === 'next' && <IconNext />}
-    </View>
+    </TouchableOpacity>
   );
 };
 
