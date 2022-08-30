@@ -5,6 +5,7 @@ import {colors, useForm} from '../../utils';
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 import {Firebase} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+import {getDatabase, ref, set} from 'firebase/database';
 
 const Register = ({navigation}) => {
   const [form, setForm] = useForm({
@@ -25,6 +26,13 @@ const Register = ({navigation}) => {
         setLoading(false);
         setForm('reset');
         const user = userCredential.user;
+        const data = {
+          fullName: form.fullName,
+          profession: form.profession,
+          email: form.email,
+        };
+        const database = getDatabase(Firebase);
+        set(ref(database, 'users/', user.uid), data);
         console.log('register sukses: ', user);
         // ...
       })
