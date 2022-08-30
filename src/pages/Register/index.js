@@ -33,7 +33,6 @@ const Register = ({navigation}) => {
         };
         const database = getDatabase(Firebase);
         set(ref(database, 'users/', user.uid), data);
-        console.log('register sukses: ', user);
         // ...
       })
       .catch(error => {
