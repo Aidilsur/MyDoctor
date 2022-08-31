@@ -2,31 +2,47 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import {Button, Gap, Header, Link} from '../../components';
 import {IconAddPhoto, IconRemovePhoto, ILNullPhoto} from '../../assets';
-import {colors, fonts} from '../../utils';
+import {colors, fonts, storeData} from '../../utils';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {showMessage} from 'react-native-flash-message';
+import {getDatabase, ref, set, update} from 'firebase/database';
+import {Firebase} from '../../config';
 
 const UploadPhoto = ({navigation, route}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
   const [photo, setPhoto] = useState(ILNullPhoto);
-  const {fullName, profession} = route.params;
+  const [photoForDb, setPhotoForDb] = useState('');
+  const {fullName, profession, uid} = route.params;
 
   const getImage = () => {
-    launchImageLibrary({}, response => {
-      // console.log('response : ', response.assets[0].uri);
-      if (response.didCancel) {
-        showMessage({
-          message: 'oops, sepertinya anda tidak memilih foto',
-          type: 'default',
-          backgroundColor: colors.error,
-          color: colors.white,
-        });
-      } else {
-        const source = {uri: response.assets[0].uri};
-        setPhoto(source);
-        setHasPhoto(true);
-      }
-    });
+    launchImageLibrary(
+      {quality: 0.5, maxWidth: 200, maxHeight: 200},
+      response => {
+        // console.log('response : ', response.assets[0].uri);
+        if (response.didCancel) {
+          showMessage({
+            message: 'oops, sepertinya anda tidak memilih foto',
+            type: 'default',
+            backgroundColor: colors.error,
+            color: colors.white,
+          });
+        } else {
+          console.log('response getImage', response);
+          setPhotoForDb(
+            `data:${response.assets[0].type};base64, ${response.assets[0].base64}`,
+          );
+          const source = {uri: response.assets[0].uri};
+          setPhoto(source);
+          setHasPhoto(true);
+        }
+      },
+    );
+  };
+
+  const uploadAndContinue = () => {
+    const database = getDatabase(Firebase);
+    update(ref(database, 'users/' + uid + '/'), {photo: photoForDb});
+    navigation.replace('MainApp');
   };
 
   return (
@@ -49,7 +65,7 @@ const UploadPhoto = ({navigation, route}) => {
           <Button
             disable={!hasPhoto}
             title="Upload and Continue"
-            onPress={() => navigation.replace('MainApp')}
+            onPress={uploadAndContinue}
           />
           <Gap height={30} />
           <Link

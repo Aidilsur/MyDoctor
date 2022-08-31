@@ -38,6 +38,7 @@ const Register = ({navigation}) => {
           fullName: form.fullName,
           profession: form.profession,
           email: form.email,
+          uid: user.uid,
         };
         const database = getDatabase(Firebase);
         set(ref(database, 'users/', user.uid), data);
