@@ -4,16 +4,28 @@ import {Button, Gap, Header, Link} from '../../components';
 import {IconAddPhoto, IconRemovePhoto, ILNullPhoto} from '../../assets';
 import {colors, fonts} from '../../utils';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {showMessage} from 'react-native-flash-message';
 
-const UploadPhoto = ({navigation}) => {
+const UploadPhoto = ({navigation, route}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
   const [photo, setPhoto] = useState(ILNullPhoto);
+  const {fullName, profession} = route.params;
+
   const getImage = () => {
     launchImageLibrary({}, response => {
       // console.log('response : ', response.assets[0].uri);
-      const src = {uri: response.assets[0].uri};
-      setPhoto(src);
-      setHasPhoto(true);
+      if (response.didCancel) {
+        showMessage({
+          message: 'oops, sepertinya anda tidak memilih foto',
+          type: 'default',
+          backgroundColor: colors.error,
+          color: colors.white,
+        });
+      } else {
+        const source = {uri: response.assets[0].uri};
+        setPhoto(source);
+        setHasPhoto(true);
+      }
     });
   };
 
@@ -30,12 +42,12 @@ const UploadPhoto = ({navigation}) => {
               <IconAddPhoto style={styles.addPhoto} />
             )}
           </TouchableOpacity>
-          <Text style={styles.name}>Shayna Melinda</Text>
-          <Text style={styles.proffesion}>Product Designer</Text>
+          <Text style={styles.name}>{fullName}</Text>
+          <Text style={styles.profession}>{profession}</Text>
         </View>
         <View>
           <Button
-            disable={hasPhoto}
+            disable={!hasPhoto}
             title="Upload and Continue"
             onPress={() => navigation.replace('MainApp')}
           />
@@ -80,7 +92,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primary[600],
     textAlign: 'center',
   },
-  proffesion: {
+  profession: {
     fontSize: 18,
     fontFamily: fonts.primary.normal,
     textAlign: 'center',
