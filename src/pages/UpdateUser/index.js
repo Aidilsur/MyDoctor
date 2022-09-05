@@ -1,12 +1,13 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Button, Gap, Header, Input, Profile} from '../../components';
-import {colors, getData, storeData} from '../../utils';
+import {getAuth, onAuthStateChanged, updatePassword} from 'firebase/auth';
 import {getDatabase, ref, update} from 'firebase/database';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
-import {Firebase} from '../../config';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {ILNullPhoto} from '../../assets';
+import {Button, Gap, Header, Input, Profile} from '../../components';
+import {Firebase} from '../../config';
+import {colors, getData, storeData} from '../../utils';
 
 const UpdateProfile = ({navigation}) => {
   const [profile, setProfile] = useState({
@@ -29,29 +30,39 @@ const UpdateProfile = ({navigation}) => {
   }, []);
 
   const saveProfile = () => {
-    const db = getDatabase(Firebase);
-    const updates = {};
-    const data = profile;
-    data.photo = photoForDb;
-    updates['users/' + profile.uid] = data;
-    update(ref(db), updates)
-      .then(() => {
-        storeData('user', data);
-        navigation.goBack('UserProfile');
-      })
-      .catch(error => {
+    if (password.length > 0) {
+      if (password.length < 6) {
         showMessage({
-          message: error.message,
+          message: 'Password kurang dari 6 karakter',
           type: 'default',
           backgroundColor: colors.error,
+          color: 'white',
         });
-      });
+      } else {
+        // update password
+        functionUpdatePassword();
+        updateProfileData();
+        navigation.replace('MainApp');
+      }
+    } else {
+      updateProfileData();
+    }
   };
 
-  const changeText = (key, value) => {
-    setProfile({
-      ...profile,
-      [key]: value,
+  const functionUpdatePassword = () => {
+    const auth = getAuth(Firebase);
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        // update password
+        updatePassword(user, password).catch(err => {
+          showMessage({
+            message: err.message,
+            type: 'default',
+            backgroundColor: colors.error,
+            color: 'white',
+          });
+        });
+      }
     });
   };
 
@@ -79,6 +90,32 @@ const UpdateProfile = ({navigation}) => {
     );
   };
 
+  const updateProfileData = () => {
+    const db = getDatabase(Firebase);
+    const updates = {};
+    const data = profile;
+    data.photo = photoForDb;
+    updates['users/' + profile.uid] = data;
+    update(ref(db), updates)
+      .then(() => {
+        storeData('user', data);
+      })
+      .catch(error => {
+        showMessage({
+          message: error.message,
+          type: 'default',
+          backgroundColor: colors.error,
+        });
+      });
+  };
+
+  const changeText = (key, value) => {
+    setProfile({
+      ...profile,
+      [key]: value,
+    });
+  };
+
   return (
     <View style={styles.page}>
       <Header title="Edit Profile" onPress={() => navigation.goBack()} />
@@ -100,15 +137,14 @@ const UpdateProfile = ({navigation}) => {
           <Gap height={24} />
           <Input label="Email" value={profile.email} disable />
           <Gap height={24} />
-          <Input label="Password" value={password} />
-          <Gap height={40} />
-          <Button
-            title="Save Profile"
-            onPress={
-              // () => navigation.goBack('UserProfile')
-              () => saveProfile()
-            }
+          <Input
+            label="Password"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={value => setPassword(value)}
           />
+          <Gap height={40} />
+          <Button title="Save Profile" onPress={() => saveProfile()} />
         </View>
       </ScrollView>
     </View>

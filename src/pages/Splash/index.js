@@ -7,15 +7,15 @@ import {colors, fonts} from '../../utils';
 const Splash = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
-      // const auth = getAuth();
-      // onAuthStateChanged(auth, user => {
-      //   if (user) {
-      //     console.log('user : ', user);
-      //     navigation.replace('MainApp');
-      //   } else {
-      //     navigation.replace('GetStarted');
-      //   }
-      // });
+      const auth = getAuth();
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          console.log('user : ', user);
+          navigation.replace('MainApp');
+        } else {
+          navigation.replace('GetStarted');
+        }
+      });
       navigation.replace('GetStarted');
     }, 3000);
   }, []);
