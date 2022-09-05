@@ -14,6 +14,7 @@ const DoctorCategory = ({category, onPress}) => {
     if (category === 'dokter obat') {
       return <ILCatObat style={styles.illustration} />;
     }
+    return <ILCatUmum style={styles.illustration} />;
   };
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>

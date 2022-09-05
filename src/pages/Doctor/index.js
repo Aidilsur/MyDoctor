@@ -1,12 +1,7 @@
 import {child, get, getDatabase, ref} from 'firebase/database';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {
-  DummyDoctor1,
-  DummyDoctor2,
-  DummyDoctor3,
-  JSONCategoryDoctor,
-} from '../../assets';
+import {DummyDoctor1, DummyDoctor2, DummyDoctor3} from '../../assets';
 import {
   DoctorCategory,
   Gap,
@@ -19,12 +14,18 @@ import {colors, fonts} from '../../utils';
 
 const Doctor = ({navigation}) => {
   const [news, setNews] = useState([]);
+  const [categoryDoctor, setCategoryDoctor] = useState([]);
 
   useEffect(() => {
     const database = ref(getDatabase(Firebase));
     get(child(database, `news/`)).then(resDB => {
       if (resDB.val()) {
         setNews(resDB.val());
+      }
+    });
+    get(child(database, `category_doctor/`)).then(resDB => {
+      if (resDB.val()) {
+        setCategoryDoctor(resDB.val());
       }
     });
   }, []);
@@ -44,7 +45,7 @@ const Doctor = ({navigation}) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.category}>
                 <Gap width={32} />
-                {JSONCategoryDoctor.data.map(item => {
+                {categoryDoctor.map(item => {
                   return (
                     <DoctorCategory
                       key={item.id}
