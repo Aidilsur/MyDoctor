@@ -39,6 +39,7 @@ const UpdateProfile = ({navigation}) => {
       }
     } else {
       updateProfileData();
+      navigation.replace('MainApp');
     }
   };
 
@@ -76,7 +77,7 @@ const UpdateProfile = ({navigation}) => {
     const updates = {};
     const data = profile;
     data.photo = photoForDb;
-    updates['users/' + profile.uid] = data;
+    updates[`users/${profile.uid}`] = data;
     update(ref(db), updates)
       .then(() => {
         storeData('user', data);

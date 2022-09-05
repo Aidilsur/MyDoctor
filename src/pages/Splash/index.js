@@ -17,7 +17,7 @@ const Splash = ({navigation}) => {
       });
       navigation.replace('GetStarted');
     }, 3000);
-  }, []);
+  }, [navigation]);
   return (
     <View style={styles.page}>
       <ILLogo />

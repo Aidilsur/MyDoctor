@@ -35,13 +35,13 @@ const UserProfile = ({navigation}) => {
     <View style={styles.page}>
       <Header title="Profile" onPress={() => navigation.goBack()} />
       <Gap height={10} />
-      {/* {profile.photo.length > 0 && ( */}
-      <Profile
-        name={profile.fullName}
-        desc={profile.profession}
-        photo={profile.photo}
-      />
-      {/* )} */}
+      {profile.fullName.length > 0 && (
+        <Profile
+          name={profile.fullName}
+          desc={profile.profession}
+          photo={profile.photo}
+        />
+      )}
       {/* <Profile name={profile.fullName} desc={profile.profession} /> */}
       <Gap height={14} />
       <List
