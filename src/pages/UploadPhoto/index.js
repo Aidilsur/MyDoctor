@@ -1,12 +1,11 @@
 import {getDatabase, ref, update} from 'firebase/database';
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {showMessage} from 'react-native-flash-message';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {IconAddPhoto, IconRemovePhoto, ILNullPhoto} from '../../assets';
 import {Button, Gap, Header, Link} from '../../components';
 import {Firebase} from '../../config';
-import {colors, fonts, storeData} from '../../utils';
+import {colors, fonts, showError, storeData} from '../../utils';
 
 const UploadPhoto = ({navigation, route}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
@@ -18,16 +17,9 @@ const UploadPhoto = ({navigation, route}) => {
     launchImageLibrary(
       {quality: 0.5, maxWidth: 200, maxHeight: 200, includeBase64: true},
       response => {
-        // console.log('response : ', response.assets[0].uri);
         if (response.didCancel) {
-          showMessage({
-            message: 'oops, sepertinya anda tidak memilih foto',
-            type: 'default',
-            backgroundColor: colors.error,
-            color: colors.white,
-          });
+          showError('oops, sepertinya anda tidak memilih foto');
         } else {
-          console.log('response getImage', response);
           setPhotoForDb(
             `data:${response.assets[0].type};base64, ${response.assets[0].base64}`,
           );

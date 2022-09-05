@@ -11,7 +11,6 @@ const HomeProfile = ({onPress}) => {
   });
   useEffect(() => {
     getData('user').then(res => {
-      console.log('data user: ', res);
       res.photo = {uri: res.photo};
       setProfile(res);
     });

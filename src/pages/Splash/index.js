@@ -10,7 +10,6 @@ const Splash = ({navigation}) => {
       const auth = getAuth();
       onAuthStateChanged(auth, user => {
         if (user) {
-          console.log('user : ', user);
           navigation.replace('MainApp');
         } else {
           navigation.replace('GetStarted');
