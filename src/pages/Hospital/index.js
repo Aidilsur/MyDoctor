@@ -1,15 +1,23 @@
+import {child, get, getDatabase, ref} from 'firebase/database';
+import React, {useEffect, useState} from 'react';
 import {ImageBackground, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {
-  DummyHospital1,
-  DummyHospital2,
-  DummyHospital3,
-  ILHospitalBG,
-} from '../../assets';
-import {colors, fonts} from '../../utils';
+import {ILHospitalBG} from '../../assets';
 import {ListHospital} from '../../components';
+import {Firebase} from '../../config';
+import {colors, fonts} from '../../utils';
 
 const Hospital = () => {
+  const [hospital, setHospital] = useState([]);
+
+  useEffect(() => {
+    const database = ref(getDatabase(Firebase));
+    get(child(database, `hospitals/`)).then(resDB => {
+      if (resDB.val()) {
+        setHospital(resDB.val());
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.page}>
       <ImageBackground source={ILHospitalBG} style={styles.background}>
@@ -17,13 +25,17 @@ const Hospital = () => {
         <Text style={styles.desc}>3 tersedia</Text>
       </ImageBackground>
       <View style={styles.content}>
-        <ListHospital
-          type="Rumah Sakit"
-          name="Citra Bunga Merdeka"
-          address="Jln. Surya Sejahtera 20"
-          pic={DummyHospital1}
-        />
-        <ListHospital
+        {hospital.map(item => {
+          return (
+            <ListHospital
+              type={item.type}
+              name={item.name}
+              address={item.address}
+              pic={item.image}
+            />
+          );
+        })}
+        {/* <ListHospital
           type="Rumah Sakit Anak"
           name="Happy Family & Kids"
           address="Jln. Surya Sejahtera 20"
@@ -34,7 +46,7 @@ const Hospital = () => {
           name="Tingkatan Paling Atas"
           address="Jln. Surya Sejahtera 20"
           pic={DummyHospital3}
-        />
+        /> */}
       </View>
     </View>
   );

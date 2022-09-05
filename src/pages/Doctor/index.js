@@ -1,4 +1,5 @@
-import React, {useEffect} from 'react';
+import {child, get, getDatabase, ref} from 'firebase/database';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {
   DummyDoctor1,
@@ -13,9 +14,21 @@ import {
   NewsItems,
   RatedDoctor,
 } from '../../components';
-import {colors, fonts, getData} from '../../utils';
+import {Firebase} from '../../config';
+import {colors, fonts} from '../../utils';
 
 const Doctor = ({navigation}) => {
+  const [news, setNews] = useState([]);
+
+  useEffect(() => {
+    const database = ref(getDatabase(Firebase));
+    get(child(database, `news/`)).then(resDB => {
+      if (resDB.val()) {
+        setNews(resDB.val());
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.page}>
       <View style={styles.content}>
@@ -66,9 +79,16 @@ const Doctor = ({navigation}) => {
             />
             <Text style={styles.sectionLabel}>GoodNews</Text>
           </View>
-          <NewsItems />
-          <NewsItems />
-          <NewsItems />
+          {news.map(item => {
+            return (
+              <NewsItems
+                key={item.id}
+                title={item.title}
+                date={item.date}
+                image={item.image}
+              />
+            );
+          })}
           <Gap height={30} />
         </ScrollView>
       </View>
