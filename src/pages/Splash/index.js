@@ -1,3 +1,4 @@
+import {getAuth, onAuthStateChanged} from 'firebase/auth';
 import React, {useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {ILLogo} from '../../assets';
@@ -6,6 +7,15 @@ import {colors, fonts} from '../../utils';
 const Splash = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
+      // const auth = getAuth();
+      // onAuthStateChanged(auth, user => {
+      //   if (user) {
+      //     console.log('user : ', user);
+      //     navigation.replace('MainApp');
+      //   } else {
+      //     navigation.replace('GetStarted');
+      //   }
+      // });
       navigation.replace('GetStarted');
     }, 3000);
   }, []);

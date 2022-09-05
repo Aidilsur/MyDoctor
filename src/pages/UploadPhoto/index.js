@@ -1,12 +1,12 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {getDatabase, ref, update} from 'firebase/database';
 import React, {useState} from 'react';
-import {Button, Gap, Header, Link} from '../../components';
-import {IconAddPhoto, IconRemovePhoto, ILNullPhoto} from '../../assets';
-import {colors, fonts, storeData} from '../../utils';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
-import {getDatabase, ref, set, update} from 'firebase/database';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {IconAddPhoto, IconRemovePhoto, ILNullPhoto} from '../../assets';
+import {Button, Gap, Header, Link} from '../../components';
 import {Firebase} from '../../config';
+import {colors, fonts, storeData} from '../../utils';
 
 const UploadPhoto = ({navigation, route}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
@@ -16,7 +16,7 @@ const UploadPhoto = ({navigation, route}) => {
 
   const getImage = () => {
     launchImageLibrary(
-      {quality: 0.5, maxWidth: 200, maxHeight: 200},
+      {quality: 0.5, maxWidth: 200, maxHeight: 200, includeBase64: true},
       response => {
         // console.log('response : ', response.assets[0].uri);
         if (response.didCancel) {
@@ -43,6 +43,10 @@ const UploadPhoto = ({navigation, route}) => {
     const database = getDatabase(Firebase);
     update(ref(database, 'users/' + uid + '/'), {photo: photoForDb});
     navigation.replace('MainApp');
+
+    const data = route.params;
+    data.photo = photoForDb;
+    storeData('user', data);
   };
 
   return (
@@ -107,6 +111,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     fontFamily: fonts.primary[600],
     textAlign: 'center',
+    textTransform: 'capitalize',
   },
   profession: {
     fontSize: 18,
@@ -114,5 +119,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.text.secondary,
     marginTop: 4,
+    textTransform: 'capitalize',
   },
 });
